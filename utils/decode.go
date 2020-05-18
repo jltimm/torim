@@ -10,7 +10,7 @@ import (
 )
 
 // DecodeImage takes a file and decodes it
-func DecodeImage(filename string) image.Image {
+func DecodeImage(filename string, c chan image.Image) {
 	if _, err := os.Stat(filename); os.IsNotExist(err) {
 		panic(fmt.Sprintf("File [%s] does not exist", filename))
 	}
@@ -22,13 +22,14 @@ func DecodeImage(filename string) image.Image {
 		if err != nil {
 			panic(err)
 		}
-		return img
+		c <- img
+		return
 	}
 	img, err := jpeg.Decode(reader)
 	if err != nil {
 		panic(err)
 	}
-	return img
+	c <- img
 }
 
 func getExtension(filename string) string {
